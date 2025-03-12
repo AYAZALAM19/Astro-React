@@ -1,0 +1,9 @@
+---
+import Layout from "../Layouts/Layout.astro";
+import Greeting  from "../Components/Greating.jsx";
+import Counter from "../Components/Counter.jsx"
+---
+<Layout >
+    <Greeting name="Ayaz" client:load />
+    <Counter client:load />
+</Layout>
