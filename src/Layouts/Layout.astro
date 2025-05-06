@@ -12,5 +12,75 @@
     <main>
       <slot />
     </main>
+  
+
+<script is:inline>
+  (function () {
+    const referrer = document.referrer;
+    const params = new URLSearchParams(window.location.search);
+
+    console.log("Referrer:", referrer);
+    console.log("URL Search Params:", window.location.search);
+
+    let source = "direct";
+    let medium = "none";
+    let campaign = params.get("utm_campaign") || "";
+
+    // Check for UTM parameters first (paid traffic)
+    if (params.get("utm_source")) {
+      source = params.get("utm_source");
+      medium = params.get("utm_medium") || "unknown";
+      console.log("UTM detected — Source:", source, "Medium:", medium, "Campaign:", campaign);
+    } else if (referrer) {
+      const refHost = new URL(referrer).hostname;
+      console.log("Referrer Hostname:", refHost);
+
+      if (refHost.includes("google.")) {
+        source = "google";
+        medium = "organic";
+      } else if (refHost.includes("bing.")) {
+        source = "bing";
+        medium = "organic";
+      } else if (refHost.includes("yahoo.")) {
+        source = "yahoo";
+        medium = "organic";
+      } else if (
+        refHost.includes("facebook.com") ||
+        refHost.includes("twitter.com") ||
+        refHost.includes("instagram.com")
+      ) {
+        source = "social";
+        medium = "referral";
+      } else {
+        source = refHost;
+        medium = "referral";
+      }
+
+      console.log("Inferred from referrer — Source:", source, "Medium:", medium);
+    } else {
+      console.log("No UTM or referrer — using default values");
+    }
+
+    // Wait for DOM to be ready
+    window.addEventListener("DOMContentLoaded", function () {
+      const sourceInput = document.querySelector('input[name="source"]');
+      const mediumInput = document.querySelector('input[name="medium"]');
+      const campaignInput = document.querySelector('input[name="campaign"]');
+
+      if (sourceInput) {
+        sourceInput.value = source;
+        console.log("Set input[name=source] =", source);
+      }
+      if (mediumInput) {
+        mediumInput.value = medium;
+        console.log("Set input[name=medium] =", medium);
+      }
+      if (campaignInput) {
+        campaignInput.value = campaign;
+        console.log("Set input[name=campaign] =", campaign);
+      }
+    });
+  })();
+</script>
   </body>
 </html>
